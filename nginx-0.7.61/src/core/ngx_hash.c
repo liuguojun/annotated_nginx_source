@@ -38,7 +38,7 @@ ngx_hash_find(ngx_hash_t *hash, ngx_uint_t key, u_char *name, size_t len)
         return elt->value;
 
     next:
-
+        /* NOTE(liuguojun): nginx hash采用了开链法， ngx_elt其实是一个连续的数组， 所以可以继续查找 ？ */
         elt = (ngx_hash_elt_t *) ngx_align_ptr(&elt->name[0] + elt->len,
                                                sizeof(void *));
         continue;
@@ -264,7 +264,7 @@ ngx_hash_init(ngx_hash_init_t *hinit, ngx_hash_key_t *names, ngx_uint_t nelts)
                           &names[n].key, names[n].key.len);
             return NGX_ERROR;
         }
-
+        /* NOTE(liuguojun): 后半部分的长度，是对应什么来着？*/
         if (hinit->bucket_size < NGX_HASH_ELT_SIZE(&names[n]) + sizeof(void *))
         {
             ngx_log_error(NGX_LOG_EMERG, hinit->pool->log, 0,
@@ -274,7 +274,8 @@ ngx_hash_init(ngx_hash_init_t *hinit, ngx_hash_key_t *names, ngx_uint_t nelts)
             return NGX_ERROR;
         }
     }
-
+    /* NOTE(liuguojun): 1. test 变量的目的?  为了计算各个桶存放key的数量，因为是临时的，所以未从nginx的pool的分配
+     *                  2. u_short类型从何而来？ 每个桶存放key的数量不会超过u_short类型的上限 */
     test = ngx_alloc(hinit->max_size * sizeof(u_short), hinit->pool->log);
     if (test == NULL) {
         return NGX_ERROR;
@@ -282,6 +283,7 @@ ngx_hash_init(ngx_hash_init_t *hinit, ngx_hash_key_t *names, ngx_uint_t nelts)
 
     bucket_size = hinit->bucket_size - sizeof(void *);
 
+    /* NOTE(liuguojun): 因为NGX_HASH_ELT_SIZE 宏里面可以看出来，大小至少是2个指针，所以这里算出需要桶的下限 */
     start = nelts / (bucket_size / (2 * sizeof(void *)));
     start = start ? start : 1;
 
@@ -289,6 +291,7 @@ ngx_hash_init(ngx_hash_init_t *hinit, ngx_hash_key_t *names, ngx_uint_t nelts)
         start = hinit->max_size - 1000;
     }
 
+    /* NOTE(liuguojun): 确定真正需要的桶的数量 */
     for (size = start; size < hinit->max_size; size++) {
 
         ngx_memzero(test, size * sizeof(u_short));
@@ -306,7 +309,7 @@ ngx_hash_init(ngx_hash_init_t *hinit, ngx_hash_key_t *names, ngx_uint_t nelts)
                           "%ui: %ui %ui \"%V\"",
                           size, key, test[key], &names[n].key);
 #endif
-
+            /* NOTE(liuguojun): 未找到合适的桶，size增大继续找*/
             if (test[key] > (u_short) bucket_size) {
                 goto next;
             }

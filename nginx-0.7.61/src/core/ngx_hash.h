@@ -15,6 +15,7 @@
 typedef struct {
     void             *value;
     u_char            len;
+    /* NOTE(liuguojun): name[1]数组这么用的用意是？ 参见 http://blog.csdn.net/virtualdesk/article/details/5455529 */
     u_char            name[1];
 } ngx_hash_elt_t;
 
