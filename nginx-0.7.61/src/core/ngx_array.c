@@ -39,6 +39,7 @@ ngx_array_destroy(ngx_array_t *a)
 
     p = a->pool;
 
+	/* NOTE(liuguojun): Èç¹û·ÖÅäµÄÊı×éÄÚ´æ¿Õ¼ä²»ÔÚpoolµÄÎ²²¿£¬¶øÊÇÔÚÖĞ¼ä£¬Õ¦°ì£¿ */
     if ((u_char *) a->elts + a->size * a->nalloc == p->d.last) {
         p->d.last -= a->size * a->nalloc;
     }
@@ -77,7 +78,9 @@ ngx_array_push(ngx_array_t *a)
 
         } else {
             /* allocate a new array */
-
+			/* NOTE(liuguojun): ·ÖÅäĞÂµÄ¿Õ¼äºó£¬¾ÉµÄÕ¦°ì¿  
+			 * Ò»Ö±ÓĞ¸öÒÉÎÊ£¬ÕâÃ´·ÖÅäÄÚ´æµÄ»°£¬»á²»»á³öÏÖhole ?			
+			 */
             new = ngx_palloc(p, 2 * size);
             if (new == NULL) {
                 return NULL;

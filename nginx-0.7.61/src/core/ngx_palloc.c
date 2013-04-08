@@ -330,6 +330,7 @@ ngx_pool_cleanup_add(ngx_pool_t *p, size_t size)
         c->data = NULL;
     }
 
+	/* NOTE(liuguojun):在cleanup链的头部插入新加入的handler c */
     c->handler = NULL;
     c->next = p->cleanup;
 

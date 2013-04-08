@@ -816,6 +816,8 @@ ngx_memn2cmp(u_char *s1, u_char *s2, size_t n1, size_t n2)
 }
 
 
+/* NOTE(liuguojun): atoi²»¿¼ÂÇÊÇ¸ºÊýµÄÇé¿öå */
+
 ngx_int_t
 ngx_atoi(u_char *line, size_t n)
 {

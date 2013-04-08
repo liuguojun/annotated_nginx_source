@@ -29,6 +29,7 @@ struct ngx_queue_s {
     (h == (h)->prev)
 
 
+/* NOTE(liuguojun): Ë«ÏòÑ­»·¶ÓÁĞ¿  */
 #define ngx_queue_insert_head(h, x)                                           \
     (x)->next = (h)->next;                                                    \
     (x)->next->prev = x;                                                      \
@@ -98,7 +99,7 @@ struct ngx_queue_s {
     (h)->prev = (n)->prev;                                                    \
     (h)->prev->next = h;
 
-
+/* NOTE(liuguojun): ×÷ÓÃå ´úÂëÃ»¿´¶® */
 #define ngx_queue_data(q, type, link)                                         \
     (type *) ((u_char *) q - offsetof(type, link))
 

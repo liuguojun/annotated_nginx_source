@@ -13,6 +13,7 @@
  * or the first element of the queue's second part otherwise
  */
 
+/* NOTE(liuguojun): 采用双指针，middle每次走一步，next每次走两步 */
 ngx_queue_t *
 ngx_queue_middle(ngx_queue_t *queue)
 {
